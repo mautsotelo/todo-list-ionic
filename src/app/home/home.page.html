@@ -1,0 +1,81 @@
+<ion-header [translucent]="true">
+  <ion-toolbar>
+    <ion-title>
+      Lista de Tarefas
+    </ion-title>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content [fullscreen]="true">
+  <ion-card>
+    <ion-card-content>
+      <ion-input 
+        labelPlacement="floating"
+        placeholder="Nova tarefa"
+        style="border-radius: 6px;"
+        clear-input
+        autofocus
+        fill="outline"
+        (keydown.enter)="addItem()"
+        [(ngModel)]="value.name"
+      >
+        <div slot="label">Descrição <ion-text color="danger">(Required)</ion-text></div>
+      </ion-input>
+
+      <div>Data <ion-text color="danger">(Required)</ion-text>
+        <ion-datetime-button datetime="datetime"></ion-datetime-button>
+      </div>
+
+      <ion-modal [keepContentsMounted]="true">
+        <ng-template>
+          <ion-datetime id="datetime" presentation="date"></ion-datetime>
+        </ng-template>
+      </ion-modal>
+      <ion-button expand="block" (click)="addItem()" [disabled]="!value.name">
+        Adicionar
+        <ion-icon style="font-size: 24px" :icon="add" />
+      </ion-button>
+    </ion-card-content>
+  </ion-card>
+
+  <ion-card>
+    <ion-card-content>
+
+      <div style="display: flex; align-items: end; justify-content: space-between">
+          <h3 style="margin-left: 13px">Minha Lista</h3>
+          <ion-button 
+            color="danger" 
+            fill="clear" 
+            style="font-size: 13px" 
+            (click)="handleClearList()"
+          >
+            Limpar lista
+          </ion-button>
+        </div>
+        <ion-list style="margin: 0px 8px 8px; padding: 0; border-radius: 6px;">
+          <ion-item>
+              <ion-label style="font-weight: bold;"
+                >Selecionar tudo
+              </ion-label>
+              <ion-checkbox slot="end">
+              </ion-checkbox>
+            </ion-item>
+          <ion-item-sliding *ngFor="let task in taskList" :key="task.id">
+            <ion-item-options side="start">
+              <ion-item-option color="danger" expandable (click)="deleteItem(task.id)">
+                <ion-icon slot="icon-only" :icon="trash"></ion-icon>
+              </ion-item-option>
+            </ion-item-options>
+            <ion-item>
+              <ion-label 
+                :style="entry.isChecked ? 'text-decoration: line-through; color: #71717A;' : ''">{{ task.name }}
+              </ion-label>
+              <!-- <ion-checkbox slot="end" @update:modelValue="entry.isChecked = $event" @ionChange="updateState(entry)"
+                :modelValue="entry.isChecked">
+              </ion-checkbox> -->
+            </ion-item>
+          </ion-item-sliding>
+        </ion-list>
+    </ion-card-content>
+  </ion-card>
+</ion-content>
