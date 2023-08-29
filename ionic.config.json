@@ -1,5 +1,7 @@
 {
   "name": "todo-list-ionic",
-  "integrations": {},
+  "integrations": {
+    "cordova": {}
+  },
   "type": "angular-standalone"
 }
