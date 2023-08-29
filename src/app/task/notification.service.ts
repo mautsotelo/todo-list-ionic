@@ -10,7 +10,6 @@ export class LocalNotificationsService {
   createNotification() {
     this.localNotifications.schedule({
       title: 'My first notification',
-      trigger: {at: new Date(new Date().getTime() + 1000)},
       text: 'Thats pretty easy...',
       foreground: true
     });

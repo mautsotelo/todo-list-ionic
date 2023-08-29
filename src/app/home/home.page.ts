@@ -28,11 +28,12 @@ export class HomePage {
 
   async ngOnInit() {
     this.refreshList();
-    this.notificationService.createNotification();
     console.log("blz", this.taskList)
   }
   
   async addItem() {
+    this.notificationService.createNotification();
+
     const generatedId = Date.now().toString();
     this.taskService.createTask(generatedId, {
       id: generatedId,
