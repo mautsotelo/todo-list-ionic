@@ -8,10 +8,12 @@ export class LocalNotificationsService {
   constructor(private localNotifications: LocalNotifications) {}
 
   createNotification() {
-    this.localNotifications.schedule({
-      title: 'My first notification',
-      text: 'Thats pretty easy...',
-      foreground: true
-    });
+    this.localNotifications.requestPermission().then(granted => {
+      this.localNotifications.schedule({
+        title: 'My first notification',
+        text: 'Thats pretty easy...',
+        foreground: true
+      });
+    })
   }
 }
