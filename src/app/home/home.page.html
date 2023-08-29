@@ -9,73 +9,70 @@
 <ion-content [fullscreen]="true">
   <ion-card>
     <ion-card-content>
-      <ion-input 
-        labelPlacement="floating"
-        placeholder="Nova tarefa"
-        style="border-radius: 6px;"
-        clear-input
-        autofocus
-        fill="outline"
-        (keydown.enter)="addItem()"
-        [(ngModel)]="value.name"
-      >
-        <div slot="label">Descrição <ion-text color="danger">(Required)</ion-text></div>
-      </ion-input>
+      <form [formGroup]="taskForm">
+        <ion-input label="Nome da tarefa" labelPlacement="floating" placeholder="Nova tarefa.." style="border-radius: 6px;" clear-input
+          autofocus fill="outline" (keydown.enter)="addItem()" formControlName="name">
+        </ion-input>
 
-      <div>Data <ion-text color="danger">(Required)</ion-text>
-        <ion-datetime-button datetime="datetime"></ion-datetime-button>
-      </div>
+        <ion-item lines="full">
+          <ion-label>Data para realização:</ion-label>
+          <ion-datetime-button datetime="datetime"></ion-datetime-button>
+        </ion-item>
 
-      <ion-modal [keepContentsMounted]="true">
-        <ng-template>
-          <ion-datetime id="datetime" presentation="date"></ion-datetime>
+        <ion-modal [keepContentsMounted]="true">
+          <ng-template>
+            <ion-datetime 
+              id="datetime" 
+              presentation="date"
+              (ionChange)="show($event)"
+              formControlName="dueDate"
+              [showDefaultButtons]="true"
+            ></ion-datetime>
+          </ng-template>
+        </ion-modal>
+        <ion-button *ngIf="!editing; else isEditing" expand="block" (click)="addItem()" [disabled]="!taskForm.value.name">
+          Adicionar
+        </ion-button>
+        <ng-template #isEditing>
+          <ion-row class="ion-justify-content-center">
+            <ion-button fill="outline" color="medium" (click)="cancelEdit()">
+              Cancelar
+            </ion-button>
+            <ion-button (click)="saveItem()" [disabled]="!taskForm.value.name">
+              Salvar
+            </ion-button>
+          </ion-row>
         </ng-template>
-      </ion-modal>
-      <ion-button expand="block" (click)="addItem()" [disabled]="!value.name">
-        Adicionar
-        <ion-icon style="font-size: 24px" :icon="add" />
-      </ion-button>
+      </form>
     </ion-card-content>
   </ion-card>
-
-  <ion-card>
-    <ion-card-content>
-
-      <div style="display: flex; align-items: end; justify-content: space-between">
-          <h3 style="margin-left: 13px">Minha Lista</h3>
-          <ion-button 
-            color="danger" 
-            fill="clear" 
-            style="font-size: 13px" 
-            (click)="handleClearList()"
-          >
-            Limpar lista
-          </ion-button>
-        </div>
-        <ion-list style="margin: 0px 8px 8px; padding: 0; border-radius: 6px;">
-          <ion-item>
-              <ion-label style="font-weight: bold;"
-                >Selecionar tudo
-              </ion-label>
-              <ion-checkbox slot="end">
-              </ion-checkbox>
-            </ion-item>
-          <ion-item-sliding *ngFor="let task in taskList" :key="task.id">
-            <ion-item-options side="start">
-              <ion-item-option color="danger" expandable (click)="deleteItem(task.id)">
-                <ion-icon slot="icon-only" :icon="trash"></ion-icon>
-              </ion-item-option>
-            </ion-item-options>
-            <ion-item>
-              <ion-label 
-                :style="entry.isChecked ? 'text-decoration: line-through; color: #71717A;' : ''">{{ task.name }}
-              </ion-label>
-              <!-- <ion-checkbox slot="end" @update:modelValue="entry.isChecked = $event" @ionChange="updateState(entry)"
-                :modelValue="entry.isChecked">
-              </ion-checkbox> -->
-            </ion-item>
-          </ion-item-sliding>
-        </ion-list>
-    </ion-card-content>
-  </ion-card>
+  <div style="display: flex; align-items: center; justify-content: space-between">
+    <h3 style="margin: 0.5rem;">Minha Lista</h3>
+  </div>
+  <ion-list style="margin: 0.5rem; padding: 0; border-radius: 6px;">
+    <ion-item>
+      <ion-label style="font-weight: bold;">Selecionar tudo
+      </ion-label>
+      <ion-checkbox slot="end" aria-label="taskFinished">
+      </ion-checkbox>
+    </ion-item>
+    <ion-item-sliding *ngFor="let task of taskList" :key="task.id">
+      <ion-item-options>
+        <ion-item-option color="danger" (click)="deleteItem(task.id)">
+          <ion-icon slot="icon-only" name="trash"></ion-icon>
+        </ion-item-option>
+        <ion-item-option (click)="editItem(task.id)">
+          <ion-icon slot="icon-only" name="pencil"></ion-icon>
+        </ion-item-option>
+      </ion-item-options>
+      <ion-item>
+        <ion-checkbox slot="start" aria-label="taskFinished" (ionChange)="task.finished = !task.finished"
+          [checked]="task.finished">
+        </ion-checkbox>
+        <ion-label 
+          [style]="task.finished ? 'text-decoration: line-through; color: #71717A;' : ''">{{ task.name }}
+        </ion-label>
+      </ion-item>
+    </ion-item-sliding>
+  </ion-list>
 </ion-content>
