@@ -12,8 +12,15 @@ export class LocalNotificationsService {
       this.localNotifications.schedule({
         title: 'My first notification',
         text: 'Thats pretty easy...',
-        foreground: true
+        foreground: true,
+        vibrate: true
       });
+    });
+    this.localNotifications.schedule({
+      id: 2,
+      title: 'Minha Notificação',
+      text: 'Esta é uma notificação local!',
+      trigger: { at: new Date(new Date().getTime() + 5000) }
     })
   }
 }

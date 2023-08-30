@@ -43,6 +43,20 @@
         <splash density="port-xhdpi" src="resources/android/splash/drawable-port-xhdpi-screen.png" />
         <splash density="port-xxhdpi" src="resources/android/splash/drawable-port-xxhdpi-screen.png" />
         <splash density="port-xxxhdpi" src="resources/android/splash/drawable-port-xxxhdpi-screen.png" />
+        <receiver android:name="com.dieam.reactnativepushnotification.modules.RNPushNotificationPublisher" />
+        <receiver android:name="com.dieam.reactnativepushnotification.modules.RNPushNotificationBootEventReceiver">
+            <intent-filter>
+                <action android:name="android.intent.action.BOOT_COMPLETED" />
+                <action android:name="android.intent.action.QUICKBOOT_POWERON" />
+                <action android:name="com.htc.intent.action.QUICKBOOT_POWERON" />
+                <category android:name="android.intent.category.DEFAULT" />
+            </intent-filter>
+        </receiver>
+        <service android:name="com.dieam.reactnativepushnotification.modules.RNPushNotificationListenerService">
+            <intent-filter>
+                <action android:name="com.dieam.reactnativepushnotification.modules.RNPushNotificationListenerService" />
+            </intent-filter>
+        </service>
     </platform>
     <platform name="ios">
         <allow-intent href="itms:*" />
