@@ -14,17 +14,18 @@
           autofocus fill="outline" (keydown.enter)="addItem()" formControlName="name">
         </ion-input>
 
-        <ion-item lines="full">
+        <ion-row>
           <ion-label>Data para realização:</ion-label>
-          <ion-datetime-button datetime="datetime"></ion-datetime-button>
-        </ion-item>
+        </ion-row>
+
+        <ion-row>
+          <ion-datetime-button style="margin-top: 5px;" datetime="datetime"></ion-datetime-button>
+        </ion-row>
 
         <ion-modal [keepContentsMounted]="true">
           <ng-template>
             <ion-datetime 
               id="datetime" 
-              presentation="date"
-              (ionChange)="show($event)"
               formControlName="dueDate"
               [showDefaultButtons]="true"
             ></ion-datetime>
@@ -46,16 +47,14 @@
       </form>
     </ion-card-content>
   </ion-card>
-  <div style="display: flex; align-items: center; justify-content: space-between">
-    <h3 style="margin: 0.5rem;">Minha Lista</h3>
-  </div>
-  <ion-list style="margin: 0.5rem; padding: 0; border-radius: 6px;">
-    <ion-item>
-      <ion-label style="font-weight: bold;">Selecionar tudo
-      </ion-label>
-      <ion-checkbox slot="end" aria-label="taskFinished">
-      </ion-checkbox>
-    </ion-item>
+  <ion-row style="padding: 0 0.5rem; display: flex; align-items: center; justify-content: space-between">
+    <h3>Minha Lista</h3>
+    <ion-button *ngIf="showPending; else showFinished" (click)="toggleTaskList('finished')">Mostrar Finalizadas</ion-button>
+    <ng-template #showFinished>
+      <ion-button (click)="toggleTaskList('pending')">Mostrar Abertas</ion-button>
+    </ng-template>
+  </ion-row>
+  <ion-list style="margin: 0.5rem; padding: 0; border-radius: 6px; overflow-y: scroll;">
     <ion-item-sliding *ngFor="let task of taskList" :key="task.id">
       <ion-item-options>
         <ion-item-option color="danger" (click)="deleteItem(task.id)">
@@ -66,7 +65,7 @@
         </ion-item-option>
       </ion-item-options>
       <ion-item>
-        <ion-checkbox slot="start" aria-label="taskFinished" (ionChange)="task.finished = !task.finished"
+        <ion-checkbox slot="start" aria-label="taskFinished" (ionChange)="updateState(task.id)"
           [checked]="task.finished">
         </ion-checkbox>
         <ion-label 

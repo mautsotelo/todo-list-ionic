@@ -22,13 +22,13 @@ export class HomePage {
   });
   taskList: Task[] = [];
   editing = false;
+  showPending = true;
 
   taskService: TaskService = inject(TaskService);
   notificationService: LocalNotificationsService = inject(LocalNotificationsService);
 
   async ngOnInit() {
-    this.refreshList();
-    console.log("blz", this.taskList)
+    await this.refreshList("pending");
   }
   
   async addItem() {
@@ -41,14 +41,15 @@ export class HomePage {
       finished: this.taskForm.value.finished,
       dueDate: this.taskForm.value.dueDate,
     }).then(async() => {
-      this.refreshList();
+      this.refreshList("pending");
       this.resetForm();
     })
   }
 
   async deleteItem(id: string) {
     this.taskService.deleteTaskByID(id).then(async() => {
-      this.refreshList();
+      this.refreshList("pending");
+      this.showPending = true;
     })
   }
 
@@ -59,7 +60,6 @@ export class HomePage {
     this.taskForm.get("name")?.setValue(item.name);
     this.taskForm.get("finished")?.setValue(item.finished);
     this.taskForm.get("dueDate")?.setValue(item.dueDate);
-    console.log("item", item)
   }
 
   async saveItem() {
@@ -70,14 +70,31 @@ export class HomePage {
       finished: this.taskForm.value.finished,
       dueDate: this.taskForm.value.dueDate,
     }).then(async() => {
-      this.refreshList();
+      this.refreshList("pending");
+      this.editing = false;
+      this.showPending = true;
       this.resetForm();
     });
   }
 
-  async refreshList() {
-    await this.taskService.getAll().then((taskList: Task[]) => {
-      this.taskList = taskList;
+  async refreshList(filterStatus: string) {
+    const taskList =  await this.taskService.getAll();
+    if (filterStatus === "finished") {
+      this.taskList = taskList.filter(element => element.finished);
+    } else if (filterStatus === "pending") {
+      this.taskList = taskList.filter(element => !element.finished);
+    }
+  }
+
+  async updateState(id: string) {
+    const taskToUpdate = await this.taskService.getTaskByID(id);
+    await this.taskService.editTask(id, {
+      id: id,
+      name: taskToUpdate.name,
+      finished: !taskToUpdate.finished,
+      dueDate: taskToUpdate.dueDate,
+    }).then(async() => {
+      this.refreshList("pending");
     });
   }
 
@@ -88,9 +105,14 @@ export class HomePage {
     this.taskForm.get("dueDate")?.setValue(new Date().toISOString());
   }
 
-  show(event: any) {
-    console.log("date", event.detail.value)
-    console.log("new date", new Date().toISOString())
+  async toggleTaskList(show: string) {
+    if (show === "finished") {
+      await this.refreshList("finished");
+      this.showPending = false;
+    } else {
+      await this.refreshList("pending");
+      this.showPending = true;
+    }
   }
 
   cancelEdit() {
